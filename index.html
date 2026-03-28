@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <title>Idol House Ranker</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+    }
+
+    .header {
+      text-align: center;
+      padding: 30px;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 10px;
+    }
+
+    h1 {
+      margin: 10px 0;
+      font-size: 40px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.05);
+      padding: 15px;
+      border-radius: 15px;
+    }
+
+    .panel h2 {
+      color: #4fc3f7;
+    }
+
+    .top-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .slot {
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.07);
+      padding: 10px;
+      border-radius: 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    button {
+      margin-top: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      background: #2196f3;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">
+  <img src="images/logo.png" class="logo">
+  <h1>Idol House Ranker</h1>
+</div>
+
+<div class="container">
+
+  <div class="panel">
+    <h2>Top 5</h2>
+    <div id="topList" class="top-list"></div>
+    <button onclick="resetRanking()">Sıfırla</button>
+  </div>
+
+  <div class="panel">
+    <h2>Stajyerler</h2>
+    <div id="grid" class="grid"></div>
+  </div>
+
+</div>
+
+<script>
+const trainees = [
+  {name:"Görkem", img:"images/gorkem.jpg"},
+  {name:"Kemal", img:"images/kemal.jpg"},
+  {name:"Ayberk", img:"images/ayberk.jpg"},
+  {name:"Civan", img:"images/civan.jpg"},
+  {name:"Arda Aykut", img:"images/ardaaykut.jpg"},
+  {name:"Miraç", img:"images/mirac.jpg"},
+  {name:"Umut", img:"images/umut.jpg"},
+  {name:"Ege", img:"images/ege.jpg"},
+  {name:"Bertuğ", img:"images/bertug.jpg"},
+  {name:"Oğuzhan", img:"images/oguzhan.jpg"},
+  {name:"Beytullah", img:"images/beytullah.jpg"},
+  {name:"Alperen", img:"images/alperen.jpg"},
+  {name:"Arda", img:"images/arda.jpg"},
+  {name:"Yusif", img:"images/yusif.jpg"},
+  {name:"Barış", img:"images/baris.jpg"},
+  {name:"Milan", img:"images/milan.jpg"},
+  {name:"Efe", img:"images/efe.jpg"},
+  {name:"Ahmet Emre", img:"images/ahmetemre.jpg"},
+  {name:"Batu", img:"images/batu.jpg"},
+  {name:"Akın", img:"images/akin.jpg"}
+];
+
+let ranking = [];
+
+function renderGrid() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+
+  trainees.forEach(t => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <img src="${t.img}">
+      <p>${t.name}</p>
+    `;
+
+    div.onclick = () => select(t);
+    grid.appendChild(div);
+  });
+}
+
+function select(t) {
+  if (ranking.length >= 5) return;
+  if (ranking.find(x => x.name === t.name)) return;
+
+  ranking.push(t);
+  updateTop();
+}
+
+function updateTop() {
+  const list = document.getElementById("topList");
+  list.innerHTML = "";
+
+  ranking.forEach((t, i) => {
+    const div = document.createElement("div");
+    div.className = "slot";
+    div.innerHTML = `${i+1}. ${t.name}`;
+    list.appendChild(div);
+  });
+}
+
+function resetRanking() {
+  ranking = [];
+  updateTop();
+}
+
+renderGrid();
+</script>
+
+</body>
+</html>
