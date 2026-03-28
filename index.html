@@ -2,46 +2,59 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Idol House Ranker</title>
 
   <style>
     body {
       margin: 0;
-      font-family: Arial;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0b1f3a, #123a63, #2a6fa1);
       color: white;
     }
 
     .header {
       text-align: center;
-      padding: 30px;
+      padding: 30px 20px 10px;
     }
 
     .logo {
       width: 120px;
-      margin-bottom: 10px;
+      max-width: 40vw;
+      margin-bottom: 12px;
     }
 
     h1 {
-      margin: 10px 0;
-      font-size: 40px;
+      margin: 0;
+      font-size: 38px;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: #d7ecff;
+      font-size: 16px;
     }
 
     .container {
       display: grid;
-      grid-template-columns: 300px 1fr;
+      grid-template-columns: 320px 1fr;
       gap: 20px;
       padding: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
     }
 
     .panel {
-      background: rgba(255,255,255,0.05);
-      padding: 15px;
-      border-radius: 15px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 18px;
+      padding: 18px;
+      backdrop-filter: blur(6px);
     }
 
     .panel h2 {
-      color: #4fc3f7;
+      margin-top: 0;
+      color: #8fd3ff;
     }
 
     .top-list {
@@ -51,142 +64,256 @@
     }
 
     .slot {
-      background: rgba(255,255,255,0.1);
-      padding: 10px;
-      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 62px;
+    }
+
+    .slot-number {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #8fd3ff;
+      color: #08304f;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+
+    .slot img {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .empty {
+      color: #c9dcec;
+      font-style: italic;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .reset-btn {
+      background: #4db8ff;
+      color: #06253f;
+    }
+
+    .remove-btn {
+      background: #1d4f7a;
+      color: white;
     }
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
+      grid-template-columns: repeat(4, minmax(160px, 1fr));
+      gap: 16px;
     }
 
     .card {
-      background: rgba(255,255,255,0.07);
-      padding: 10px;
-      border-radius: 15px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 16px;
       text-align: center;
       cursor: pointer;
-      transition: 0.2s;
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
     }
 
     .card:hover {
-      transform: scale(1.05);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
+    }
+
+    .card.selected {
+      opacity: 0.45;
+      pointer-events: none;
     }
 
     .card img {
-      width: 90px;
-      height: 90px;
+      width: 92px;
+      height: 92px;
       border-radius: 50%;
       object-fit: cover;
+      margin-bottom: 10px;
+      border: 3px solid rgba(255,255,255,0.12);
     }
 
-    button {
-      margin-top: 10px;
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      background: #2196f3;
-      color: white;
-      cursor: pointer;
+    .name {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .hint {
+      font-size: 13px;
+      color: #d7ecff;
+    }
+
+    @media (max-width: 1000px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+
+      .grid {
+        grid-template-columns: repeat(2, minmax(140px, 1fr));
+      }
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
-
 <body>
-
-<div class="header">
-  <img src="images/logo.png" class="logo">
-  <h1>Idol House Ranker</h1>
-</div>
-
-<div class="container">
-
-  <div class="panel">
-    <h2>Top 5</h2>
-    <div id="topList" class="top-list"></div>
-    <button onclick="resetRanking()">Sıfırla</button>
+  <div class="header">
+    <img src="logo.png" alt="Idol House Logo" class="logo">
+    <h1>Idol House Ranker</h1>
+    <div class="subtitle">Top 5 seçimini oluştur.</div>
   </div>
 
-  <div class="panel">
-    <h2>Stajyerler</h2>
-    <div id="grid" class="grid"></div>
+  <div class="container">
+    <div class="panel">
+      <h2>Top 5</h2>
+      <div class="top-list" id="topList"></div>
+
+      <div class="button-row">
+        <button class="reset-btn" onclick="resetRanking()">Sıfırla</button>
+        <button class="remove-btn" onclick="removeLast()">Son seçimi kaldır</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Stajyerler</h2>
+      <div class="grid" id="traineeGrid"></div>
+    </div>
   </div>
 
-</div>
+  <script>
+    const trainees = [
+      { name: "Görkem", img: "gorkem.jpg" },
+      { name: "Kemal", img: "kemal.jpg" },
+      { name: "Ayberk", img: "ayberk.jpg" },
+      { name: "Civan", img: "civan.jpg" },
+      { name: "Arda Aykut", img: "ardaaykut.jpg" },
+      { name: "Miraç", img: "mirac.jpg" },
+      { name: "Umut", img: "umut.jpg" },
+      { name: "Ege", img: "ege.jpg" },
+      { name: "Bertuğ", img: "bertug.jpg" },
+      { name: "Oğuzhan", img: "oguzhan.jpg" },
+      { name: "Beytullah", img: "beytullah.jpg" },
+      { name: "Alperen", img: "alperen.jpg" },
+      { name: "Arda", img: "arda.jpg" },
+      { name: "Yusif", img: "yusif.jpg" },
+      { name: "Barış", img: "baris.jpg" },
+      { name: "Milan", img: "milan.jpg" },
+      { name: "Efe", img: "efe.jpg" },
+      { name: "Ahmet Emre", img: "ahmetemre.jpg" },
+      { name: "Batu", img: "batu.jpg" },
+      { name: "Akın", img: "akin.jpg" }
+    ];
 
-<script>
-const trainees = [
-  {name:"Görkem", img:"images/gorkem.jpg"},
-  {name:"Kemal", img:"images/kemal.jpg"},
-  {name:"Ayberk", img:"images/ayberk.jpg"},
-  {name:"Civan", img:"images/civan.jpg"},
-  {name:"Arda Aykut", img:"images/ardaaykut.jpg"},
-  {name:"Miraç", img:"images/mirac.jpg"},
-  {name:"Umut", img:"images/umut.jpg"},
-  {name:"Ege", img:"images/ege.jpg"},
-  {name:"Bertuğ", img:"images/bertug.jpg"},
-  {name:"Oğuzhan", img:"images/oguzhan.jpg"},
-  {name:"Beytullah", img:"images/beytullah.jpg"},
-  {name:"Alperen", img:"images/alperen.jpg"},
-  {name:"Arda", img:"images/arda.jpg"},
-  {name:"Yusif", img:"images/yusif.jpg"},
-  {name:"Barış", img:"images/baris.jpg"},
-  {name:"Milan", img:"images/milan.jpg"},
-  {name:"Efe", img:"images/efe.jpg"},
-  {name:"Ahmet Emre", img:"images/ahmetemre.jpg"},
-  {name:"Batu", img:"images/batu.jpg"},
-  {name:"Akın", img:"images/akin.jpg"}
-];
+    const maxRank = 5;
+    let ranking = [];
 
-let ranking = [];
+    function renderTrainees() {
+      const grid = document.getElementById("traineeGrid");
+      grid.innerHTML = "";
 
-function renderGrid() {
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
+      trainees.forEach((trainee) => {
+        const isSelected = ranking.some(item => item.name === trainee.name);
 
-  trainees.forEach(t => {
-    const div = document.createElement("div");
-    div.className = "card";
+        const card = document.createElement("div");
+        card.className = "card" + (isSelected ? " selected" : "");
+        card.innerHTML = `
+          <img src="${trainee.img}" alt="${trainee.name}">
+          <div class="name">${trainee.name}</div>
+          <div class="hint">${isSelected ? "Seçildi" : "Eklemek için tıkla"}</div>
+        `;
 
-    div.innerHTML = `
-      <img src="${t.img}">
-      <p>${t.name}</p>
-    `;
+        if (!isSelected) {
+          card.onclick = () => addToRanking(trainee);
+        }
 
-    div.onclick = () => select(t);
-    grid.appendChild(div);
-  });
-}
+        grid.appendChild(card);
+      });
+    }
 
-function select(t) {
-  if (ranking.length >= 5) return;
-  if (ranking.find(x => x.name === t.name)) return;
+    function renderRanking() {
+      const topList = document.getElementById("topList");
+      topList.innerHTML = "";
 
-  ranking.push(t);
-  updateTop();
-}
+      for (let i = 0; i < maxRank; i++) {
+        const slot = document.createElement("div");
+        slot.className = "slot";
 
-function updateTop() {
-  const list = document.getElementById("topList");
-  list.innerHTML = "";
+        if (ranking[i]) {
+          slot.innerHTML = `
+            <div class="slot-number">${i + 1}</div>
+            <img src="${ranking[i].img}" alt="${ranking[i].name}">
+            <div>${ranking[i].name}</div>
+          `;
+        } else {
+          slot.innerHTML = `
+            <div class="slot-number">${i + 1}</div>
+            <div class="empty">Boş</div>
+          `;
+        }
 
-  ranking.forEach((t, i) => {
-    const div = document.createElement("div");
-    div.className = "slot";
-    div.innerHTML = `${i+1}. ${t.name}`;
-    list.appendChild(div);
-  });
-}
+        topList.appendChild(slot);
+      }
+    }
 
-function resetRanking() {
-  ranking = [];
-  updateTop();
-}
+    function addToRanking(trainee) {
+      if (ranking.length >= maxRank) return;
+      if (ranking.some(item => item.name === trainee.name)) return;
 
-renderGrid();
-</script>
+      ranking.push(trainee);
+      renderAll();
+    }
 
+    function resetRanking() {
+      ranking = [];
+      renderAll();
+    }
+
+    function removeLast() {
+      ranking.pop();
+      renderAll();
+    }
+
+    function renderAll() {
+      renderRanking();
+      renderTrainees();
+    }
+
+    renderAll();
+  </script>
 </body>
 </html>
